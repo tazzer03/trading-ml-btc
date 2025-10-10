@@ -25,17 +25,16 @@ def save_state(state):
     STATE_FILE.write_text(json.dumps(state, indent=2))
 
 def append_csv(path, row: dict):
+    from pathlib import Path
     import pandas as pd
-    df = pd.DataFrame([row]).set_index("datetime")
-    if path.exists() and path.stat().st_size > 0:
-        try:
-            old = pd.read_csv(path, parse_dates=["datetime"]).set_index("datetime")
-            df = pd.concat([old, df]).sort_index()
-            df = df[~df.index.duplicated(keep="last")]
-        except pd.errors.EmptyDataError:
-            # File exists but has no valid content; start fresh
-            pass
-    df.to_csv(path)
+
+    path = Path(path)
+    write_header = (not path.exists()) or (path.stat().st_size == 0)
+    df = pd.DataFrame([row])  # one-row dataframe
+
+    # Append without ever reading the file (avoids EmptyDataError)
+    df.to_csv(path, mode="a", index=False, header=write_header)
+
 
 
 def main():
