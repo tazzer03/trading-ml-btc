@@ -24,12 +24,17 @@ def load_state():
 def save_state(state):
     STATE_FILE.write_text(json.dumps(state, indent=2))
 
-def append_csv(path: Path, row: dict):
+def append_csv(path, row: dict):
     df = pd.DataFrame([row]).set_index("datetime")
-    if path.exists():
-        old = pd.read_csv(path, parse_dates=["datetime"]).set_index("datetime")
-        df = pd.concat([old, df]).sort_index()
-        df = df[~df.index.duplicated(keep="last")]
+    # only try to read if the file exists and has content
+    if path.exists() and path.stat().st_size > 0:
+        try:
+            old = pd.read_csv(path, parse_dates=["datetime"]).set_index("datetime")
+            df = pd.concat([old, df]).sort_index()
+            df = df[~df.index.duplicated(keep="last")]
+        except pd. errors.EmptyDataError:
+            # file exists but has no rows/header; just start fresh
+            pass
     df.to_csv(path)
 
 def main():
