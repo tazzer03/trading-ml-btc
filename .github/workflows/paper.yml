@@ -32,7 +32,6 @@ jobs:
         run: |
           python paper_trade.py
 
-      # Safely commit & push logs back to main
       - name: Commit and push results
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,17 +39,15 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # stage files; ignore if they don't exist (first run)
+          # Stage files; don’t fail if they aren’t there yet
           git add paper_state.json signals_log.csv paper_trades.csv || true
 
-          # if nothing changed, exit gracefully
+          # Exit gracefully if nothing to commit
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0
           fi
 
-          # pull latest (in case a human pushed since this job started)
           git pull --rebase origin main || true
-
           git commit -m "Update paper trading logs [skip ci]"
           git push origin HEAD:main
