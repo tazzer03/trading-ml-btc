@@ -32,7 +32,7 @@ def append_csv(path, row: dict):
             old = pd.read_csv(path, parse_dates=["datetime"]).set_index("datetime")
             df = pd.concat([old, df]).sort_index()
             df = df[~df.index.duplicated(keep="last")]
-        except pd. errors.EmptyDataError:
+        except pd.errors.EmptyDataError:
             # file exists but has no rows/header; just start fresh
             pass
     df.to_csv(path)
