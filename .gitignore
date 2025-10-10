@@ -1,0 +1,15 @@
+# virtual envs / OS clutter
+.venv/
+env/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# local notebooks / scratch (if any)
+*.ipynb_checkpoints/
